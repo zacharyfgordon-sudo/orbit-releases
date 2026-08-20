@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit — Get Orbit</title>
+<meta name="description" content="Orbit remembers everyone you know — privately, on your devices.">
+<style>
+  :root {
+    --ink: #1b1b1d;
+    --ink-soft: #55555c;
+    --accent: #4a5cf0;
+    --accent-ink: #ffffff;
+    --card: #eef0fe;
+    --bg: #ffffff;
+    --hairline: #e7e7ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2f2f4;
+      --ink-soft: #a7a7b0;
+      --accent: #6b7bff;
+      --card: #22242e;
+      --bg: #131318;
+      --hairline: #2a2a31;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg); color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1060px; margin: 0 auto; padding: 28px 24px;
+  }
+  .wordmark { display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+  .wordmark svg { display: block; }
+  main { max-width: 1060px; margin: 0 auto; padding: 40px 24px 80px; }
+  .hero { text-align: center; margin: 24px auto 64px; max-width: 640px; }
+  .hero h1 { font-size: clamp(34px, 6vw, 54px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+  .hero p { margin-top: 16px; font-size: 19px; color: var(--ink-soft); line-height: 1.5; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--card); border-radius: 22px; padding: 44px 32px 40px; text-align: center; }
+  .panel h2 { font-size: 27px; font-weight: 750; letter-spacing: -0.02em; }
+  .panel .sub { margin: 10px auto 30px; color: var(--ink-soft); font-size: 15.5px; line-height: 1.55; max-width: 340px; }
+  .btn {
+    display: inline-block; background: var(--accent); color: var(--accent-ink);
+    font-size: 17px; font-weight: 600; text-decoration: none;
+    padding: 14px 30px; border-radius: 999px;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+  .note { margin-top: 18px; font-size: 13px; color: var(--ink-soft); }
+  .principles {
+    margin: 84px auto 0; max-width: 720px; text-align: center;
+    border-top: 1px solid var(--hairline); padding-top: 56px;
+  }
+  .principles h3 { font-size: 21px; font-weight: 700; margin-bottom: 28px; letter-spacing: -0.01em; }
+  .principles ul { list-style: none; display: grid; gap: 18px; }
+  .principles li { color: var(--ink-soft); font-size: 16px; line-height: 1.6; }
+  .principles li strong { color: var(--ink); font-weight: 650; }
+  footer {
+    border-top: 1px solid var(--hairline);
+    padding: 28px 24px 48px; text-align: center;
+    color: var(--ink-soft); font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="wordmark" href="/orbit-releases/">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+      <circle cx="15" cy="15" r="13.5" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+      <circle cx="15" cy="15" r="4.6" fill="var(--accent)"/>
+      <circle cx="26" cy="9" r="2.6" fill="var(--accent)"/>
+    </svg>
+    Orbit
+  </a>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Everyone you know,<br>remembered.</h1>
+    <p>Orbit keeps the people in your life — and everything worth remembering about them — organized, searchable, and completely private.</p>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <h2>Orbit for iPhone</h2>
+      <p class="sub">The beta ships through Apple&nbsp;TestFlight. Updates arrive automatically.</p>
+      <a class="btn" href="mailto:socialconnectorss@gmail.com?subject=Orbit%20iOS%20beta">Request a TestFlight invite</a>
+      <p class="note">Have an invite? Open TestFlight on your iPhone.</p>
+    </div>
+    <div class="panel">
+      <h2>Orbit for Mac</h2>
+      <p class="sub">Direct download, signed and notarized by&nbsp;Apple. Orbit keeps itself up to date.</p>
+      <a class="btn" href="https://github.com/zacharyfgordon-sudo/orbit-releases/releases/latest">Download for Mac</a>
+      <p class="note">Requires macOS 14 or later. Open the zip and drag Orbit into Applications.</p>
+    </div>
+  </section>
+
+  <section class="principles">
+    <h3>Private by design</h3>
+    <ul>
+      <li><strong>No servers.</strong> Your people, notes, and history live on your devices — Orbit runs no cloud that could see them.</li>
+      <li><strong>Your devices talk directly.</strong> iPhone and Mac sync over your own network, end-to-end encrypted with keys only they hold.</li>
+      <li><strong>Nothing leaves without you.</strong> On-device intelligence does the remembering; what you share is always your call.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  Orbit · Made independently · Nothing on this page tracks you
+</footer>
+</body>
+</html>
