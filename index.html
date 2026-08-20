@@ -56,13 +56,17 @@
   .btn.secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
   .note { margin-top: 18px; font-size: 13px; color: var(--ink-soft); }
   .principles {
-    margin: 84px auto 0; max-width: 720px; text-align: center;
+    margin: 84px auto 0; max-width: 860px; text-align: center;
     border-top: 1px solid var(--hairline); padding-top: 56px;
   }
-  .principles h3 { font-size: 21px; font-weight: 700; margin-bottom: 28px; letter-spacing: -0.01em; }
-  .principles ul { list-style: none; display: grid; gap: 18px; }
-  .principles li { color: var(--ink-soft); font-size: 16px; line-height: 1.6; }
-  .principles li strong { color: var(--ink); font-weight: 650; }
+  .principles h3 { font-size: clamp(24px, 4vw, 32px); font-weight: 780; margin-bottom: 34px; letter-spacing: -0.02em; }
+  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; }
+  @media (max-width: 720px) { .feature-grid { grid-template-columns: 1fr; } }
+  .feature { background: var(--card); border-radius: 18px; padding: 26px 26px 24px; }
+  .feature h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .feature p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.6; }
+  .feature p strong { color: var(--ink); font-weight: 640; }
+  .feature sup { font-size: 0.7em; }
   footer {
     border-top: 1px solid var(--hairline);
     padding: 28px 24px 48px; text-align: center;
@@ -104,12 +108,25 @@
   </section>
 
   <section class="principles">
-    <h3>Private by design</h3>
-    <ul>
-      <li><strong>No servers.</strong> Your people, notes, and history live on your devices — Orbit runs no cloud that could see them.</li>
-      <li><strong>Your devices talk directly.</strong> iPhone and Mac sync over your own network, end-to-end encrypted with keys only they hold.</li>
-      <li><strong>Nothing leaves without you.</strong> On-device intelligence does the remembering; what you share is always your call.</li>
-    </ul>
+    <h3>Security ahead of the curve</h3>
+    <div class="feature-grid">
+      <div class="feature">
+        <h4>Post-quantum encryption</h4>
+        <p>Every sync between your devices is sealed with a hybrid of <strong>ML-KEM-768</strong> — the NIST post-quantum standard — and Curve25519. Even a future quantum computer can't read what your devices say to each other.</p>
+      </div>
+      <div class="feature">
+        <h4>10<sup>50</sup> years to crack</h4>
+        <p>Brute-forcing one of Orbit's 256-bit keys would take today's fastest supercomputer on the order of 10<sup>50</sup> years. The universe is about 1.4&times;10<sup>10</sup> years old.</p>
+      </div>
+      <div class="feature">
+        <h4>Choose your level</h4>
+        <p>Four security levels — <strong>Sealed, Guarded, Lockdown, and Blackout</strong> — let you decide exactly how strict Orbit runs, from everyday ease to nothing-in, nothing-out.</p>
+      </div>
+      <div class="feature">
+        <h4>No servers, ever</h4>
+        <p>Your people, notes, and history live on your devices. Orbit runs no cloud that could see them, and your devices talk directly — keys never leave your hands.</p>
+      </div>
+    </div>
   </section>
 </main>
 
