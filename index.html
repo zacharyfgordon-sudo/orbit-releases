@@ -3,121 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Orbit — Get Orbit</title>
+<title>Orbit</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="description" content="Orbit remembers everyone you know — privately, on your devices.">
 <style>
-  :root {
-    --ink: #1b1b1d;
-    --ink-soft: #55555c;
-    --accent: #17a34a;
-    --accent-ink: #ffffff;
-    --card: #f0f6f1;
-    --bg: #ffffff;
-    --hairline: #e7e7ea;
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg); color: var(--ink);
-    -webkit-font-smoothing: antialiased;
+    background: #ffffff; color: #1b1b1d; -webkit-font-smoothing: antialiased;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
   }
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    max-width: 1060px; margin: 0 auto; padding: 28px 24px;
+  .gate { text-align: center; padding: 24px; width: 100%; max-width: 360px; }
+  .gate img { width: 64px; height: 64px; margin-bottom: 22px; }
+  .gate h1 { font-size: 24px; font-weight: 750; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .gate p { color: #55555c; font-size: 15px; margin-bottom: 26px; }
+  .gate input {
+    width: 100%; font-size: 17px; padding: 13px 16px; border: 1.5px solid #e0e0e4;
+    border-radius: 12px; outline: none; text-align: center; background: #fafafa;
   }
-  .wordmark { display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
-  .wordmark svg { display: block; }
-  main { max-width: 1060px; margin: 0 auto; padding: 40px 24px 80px; }
-  .hero { text-align: center; margin: 24px auto 64px; max-width: 640px; }
-  .hero h1 { font-size: clamp(34px, 6vw, 54px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-  .hero p { margin-top: 16px; font-size: 19px; color: var(--ink-soft); line-height: 1.5; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-  .panel { background: var(--card); border-radius: 22px; padding: 44px 32px 40px; text-align: center; }
-  .panel h2 { font-size: 27px; font-weight: 750; letter-spacing: -0.02em; }
-  .panel .sub { margin: 10px auto 30px; color: var(--ink-soft); font-size: 15.5px; line-height: 1.55; max-width: 340px; }
-  .btn {
-    display: inline-block; background: var(--accent); color: var(--accent-ink);
-    font-size: 17px; font-weight: 600; text-decoration: none;
-    padding: 14px 30px; border-radius: 999px;
+  .gate input:focus { border-color: #17a34a; background: #fff; }
+  .gate button {
+    margin-top: 14px; width: 100%; background: #17a34a; color: #fff; border: none;
+    font-size: 17px; font-weight: 600; padding: 13px; border-radius: 999px; cursor: pointer;
   }
-  .btn:hover { filter: brightness(1.08); }
-  .btn.secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
-  .note { margin-top: 18px; font-size: 13px; color: var(--ink-soft); }
-  .principles {
-    margin: 84px auto 0; max-width: 860px; text-align: center;
-    border-top: 1px solid var(--hairline); padding-top: 56px;
-  }
-  .principles h3 { font-size: clamp(24px, 4vw, 32px); font-weight: 780; margin-bottom: 34px; letter-spacing: -0.02em; }
-  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; }
-  @media (max-width: 720px) { .feature-grid { grid-template-columns: 1fr; } }
-  .feature { background: var(--card); border-radius: 18px; padding: 26px 26px 24px; }
-  .feature h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; }
-  .feature p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.6; }
-  .feature p strong { color: var(--ink); font-weight: 640; }
-  .feature sup { font-size: 0.7em; }
-  footer {
-    border-top: 1px solid var(--hairline);
-    padding: 28px 24px 48px; text-align: center;
-    color: var(--ink-soft); font-size: 13px;
-  }
+  .gate .err { color: #c33; font-size: 13.5px; margin-top: 12px; min-height: 18px; }
 </style>
 </head>
 <body>
-<header>
-  <a class="wordmark" href="/orbit-releases/">
-    <img src="orbit-mark.png" width="30" height="30" alt="">
-    Orbit
-  </a>
-</header>
-
-<main>
-  <section class="hero">
-    <h1>Everyone you know,<br>remembered.</h1>
-    <p>Orbit keeps the people in your life — and everything worth remembering about them — organized, searchable, and completely private.</p>
-  </section>
-
-  <section class="grid">
-    <div class="panel">
-      <h2>Orbit for iPhone</h2>
-      <p class="sub">The beta ships through Apple&nbsp;TestFlight. Updates arrive automatically.</p>
-      <a class="btn" href="mailto:socialconnectorss@gmail.com?subject=Orbit%20iOS%20beta">Request a TestFlight invite</a>
-      <p class="note">Have an invite? Open TestFlight on your iPhone.</p>
-    </div>
-    <div class="panel">
-      <h2>Orbit for Mac</h2>
-      <p class="sub">Direct download, signed and notarized by&nbsp;Apple. Orbit keeps itself up to date.</p>
-      <a class="btn" href="https://github.com/zacharyfgordon-sudo/orbit-releases/releases/latest">Download for Mac</a>
-      <p class="note">Requires macOS 14 or later. Open the zip and drag Orbit into Applications.</p>
-    </div>
-  </section>
-
-  <section class="principles">
-    <h3>Security ahead of the curve</h3>
-    <div class="feature-grid">
-      <div class="feature">
-        <h4>Post-quantum encryption</h4>
-        <p>Every sync between your devices is sealed with a hybrid of <strong>ML-KEM-768</strong> — the NIST post-quantum standard — and Curve25519. Even a future quantum computer can't read what your devices say to each other.</p>
-      </div>
-      <div class="feature">
-        <h4>10<sup>50</sup> years to crack</h4>
-        <p>Brute-forcing one of Orbit's 256-bit keys would take today's fastest supercomputer on the order of 10<sup>50</sup> years. The universe is about 1.4&times;10<sup>10</sup> years old.</p>
-      </div>
-      <div class="feature">
-        <h4>Choose your level</h4>
-        <p>Four security levels — <strong>Sealed, Guarded, Lockdown, and Blackout</strong> — let you decide exactly how strict Orbit runs, from everyday ease to nothing-in, nothing-out.</p>
-      </div>
-      <div class="feature">
-        <h4>No servers, ever</h4>
-        <p>Your people, notes, and history live on your devices. Orbit runs no cloud that could see them, and your devices talk directly — keys never leave your hands.</p>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  Orbit · Made independently · Nothing on this page tracks you
-</footer>
+<form class="gate" id="gate">
+  <img src="orbit-mark.png" alt="">
+  <h1>Orbit</h1>
+  <p>This page is private. Enter the passphrase.</p>
+  <input type="password" id="pw" autocomplete="current-password" autofocus>
+  <button type="submit">Enter</button>
+  <div class="err" id="err"></div>
+</form>
+<script>
+const SALT = "ocIb8Eu0jM/uaCIpVBpouA==", DATA = "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";
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function unlock(pw) {
+  const km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: b64(SALT), iterations: 210000, hash: "SHA-256" },
+    km, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const raw = b64(DATA);
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: raw.slice(0, 12) }, key, raw.slice(12));
+  return new TextDecoder().decode(plain);
+}
+async function attempt(pw, silent) {
+  try {
+    const html = await unlock(pw);
+    sessionStorage.setItem("orbit-gate", pw);
+    document.open(); document.write(html); document.close();
+  } catch (e) {
+    if (!silent) document.getElementById("err").textContent = "That passphrase isn\u2019t right.";
+  }
+}
+document.getElementById("gate").addEventListener("submit", ev => {
+  ev.preventDefault();
+  attempt(document.getElementById("pw").value.trim(), false);
+});
+const saved = sessionStorage.getItem("orbit-gate");
+if (saved) attempt(saved, true);
+</script>
 </body>
 </html>
