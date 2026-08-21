@@ -4,5 +4,13 @@
     <title>Orbit</title>
     <description>Updates for Orbit for Mac</description>
     <language>en</language>
+    <item>
+      <title>Orbit 1.0</title>
+      <pubDate>Fri, 21 Aug 2026 13:51:29 +0000</pubDate>
+      <sparkle:version>2608210945</sparkle:version>
+      <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <enclosure url="https://github.com/zacharyfgordon-sudo/orbit-releases/releases/download/v1.0-2608210945/Orbit-1.0-2608210945.zip" sparkle:edSignature="NVjR/gmwTZUpamxuIVbzf9qpiHBvGlExmj6WRQ2lvSRiASOVAYj7UtTU6NTm6gvyiURjkNuTgqOKi46CZ1S9AQ==" length="122386639" type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
