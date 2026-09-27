@@ -25,15 +25,18 @@
     margin-top: 14px; width: 100%; background: #17a34a; color: #fff; border: none;
     font-size: 17px; font-weight: 600; padding: 13px; border-radius: 999px; cursor: pointer;
   }
+  .gate .for-pm { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
   .gate .err { color: #c33; font-size: 13.5px; margin-top: 12px; min-height: 18px; }
 </style>
 </head>
 <body>
-<form class="gate" id="gate">
+<form class="gate" id="gate" method="post" action="#">
   <img src="orbit-mark.png" alt="">
   <h1>Orbit</h1>
   <p>This page is private. Enter the passphrase.</p>
-  <input type="password" id="pw" autocomplete="current-password" autofocus>
+  <!-- A username for the browser's password manager to file the passphrase under, so it can offer it back with Touch ID / Face ID. -->
+  <input class="for-pm" type="text" name="username" autocomplete="username" value="Orbit" readonly tabindex="-1" aria-hidden="true">
+  <input type="password" id="pw" name="password" autocomplete="current-password" autofocus>
   <button type="submit">Enter</button>
   <div class="err" id="err"></div>
 </form>
@@ -53,6 +56,10 @@ async function attempt(pw, silent) {
   try {
     const html = await unlock(pw);
     sessionStorage.setItem("orbit-gate", pw);
+    // Right passphrase: tell the browser the sign-in worked so it offers to save it (Chrome; Safari saves from the form).
+    if (!silent && window.PasswordCredential) {
+      try { await navigator.credentials.store(new PasswordCredential({ id: "Orbit", password: pw, name: "Orbit" })); } catch (e) {}
+    }
     document.open(); document.write(html); document.close();
   } catch (e) {
     if (!silent) document.getElementById("err").textContent = "That passphrase isn\u2019t right.";
