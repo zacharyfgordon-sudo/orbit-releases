@@ -28,6 +28,23 @@
   }
   .wordmark { display: flex; align-items: center; gap: 16px; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
   .wordmark svg { display: block; }
+  .paper-btn {
+    display: inline-flex; align-items: center; gap: 28px;
+    background: var(--accent); color: var(--accent-ink); text-decoration: none;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 14px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+    padding: 13px 20px 13px 22px; border-radius: 4px;
+    box-shadow: 0 0 22px rgba(23, 163, 74, 0.35);
+  }
+  .paper-btn:hover { filter: brightness(1.08); }
+  .paper-btn svg { flex: none; }
+  @media (max-width: 520px) {
+    header { gap: 12px; padding: 14px 16px; }
+    .wordmark { gap: 10px; font-size: 21px; }
+    .wordmark img { width: 40px; height: 40px; }
+    .paper-btn { gap: 10px; font-size: 11px; letter-spacing: 0.06em; padding: 10px 12px; }
+    .paper-btn svg { width: 14px; height: 14px; }
+  }
   main { max-width: 1060px; margin: 0 auto; padding: 0 24px 80px; }
   .hero { text-align: center; margin: 0 auto 28px; max-width: 640px; }
   .hero h1 { font-size: clamp(34px, 5.5vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
@@ -74,6 +91,7 @@
     <img src="orbit-mark.png" width="52" height="52" alt="">
     Orbit
   </a>
+  <a class="paper-btn" href="#security">Read the whitepaper<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
 </header>
 
 <main>
@@ -98,7 +116,7 @@
     </div>
   </section>
 
-  <section class="principles">
+  <section class="principles" id="security">
     <h3>Security ahead of the curve</h3>
     <div class="feature-grid">
       <div class="feature">
