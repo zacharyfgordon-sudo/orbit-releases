@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit — Whitepaper</title>
+<meta name="description" content="Spend more of your life with the people already in it.">
+<link rel="icon" href="favicon.png">
+<style>
+  :root {
+    --ink: #1b1b1d;
+    --ink-soft: #55555c;
+    --accent: #17a34a;
+    --accent-ink: #ffffff;
+    --card: #f0f6f1;
+    --bg: #ffffff;
+    --page: #f6f8f6;
+    --hairline: #e3e7e4;
+    --ring: rgba(23, 163, 74, 0.14);
+    --sidebar: 232px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    background: var(--page); color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- The Orbit mark, drawn by scrolling: the dot circles the O ---- */
+  .mark-svg { display: block; overflow: visible; }
+  .mark-svg .trail { fill: none; stroke: var(--ink); stroke-width: 31; }
+  .mark-svg .dot { fill: var(--ink); }
+
+  /* ---- Sidebar: logo, numbered section cards, way back ---- */
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; width: var(--sidebar);
+    background: var(--bg); border-right: 1px solid var(--hairline);
+    display: flex; flex-direction: column; padding: 18px 16px 16px;
+    overflow-y: auto;
+  }
+  .sidebar .mark { display: flex; justify-content: center; margin-bottom: 18px; }
+  .toc { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .toc a {
+    display: block; text-decoration: none; color: var(--ink);
+    border: 1px solid var(--hairline); border-radius: 12px;
+    padding: 9px 14px 10px; background: var(--bg);
+    transition: background .15s, border-color .15s;
+  }
+  .toc a:hover { border-color: var(--accent); }
+  .toc .num { display: block; color: var(--accent); font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+  .toc .label { display: block; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  .toc a.active { background: #e2f2e7; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .toc a.active .label { color: var(--ink); }
+  .back {
+    margin-top: auto; display: flex; align-items: center; gap: 8px; justify-content: center;
+    color: var(--ink-soft); font-size: 13px; font-weight: 600; text-decoration: none;
+    padding: 14px 10px 4px; border-radius: 10px;
+  }
+  .back:hover { color: var(--accent); }
+
+  /* ---- Phone top bar (replaces the sidebar under 820px) ---- */
+  .topbar { display: none; }
+
+  /* ---- Content panels ---- */
+  main { margin-left: var(--sidebar); padding: 18px 18px 40px; display: flex; flex-direction: column; gap: 18px; }
+  .panel {
+    background: var(--bg); border: 1px solid var(--hairline); border-radius: 22px;
+    padding: 64px 32px 72px;
+  }
+  .panel > .inner { max-width: 680px; margin: 0 auto; }
+
+  .cover {
+    position: relative; overflow: hidden; text-align: center;
+    padding: 88px 32px 96px;
+  }
+  .cover .rings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .cover .inner { position: relative; }
+  .cover .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  .cover h1 { font-size: clamp(44px, 7vw, 72px); font-weight: 800; letter-spacing: -0.035em; line-height: 1; }
+  .cover .tagline { margin-top: 20px; font-size: clamp(21px, 2.6vw, 26px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.3; }
+  .cover p.lede { margin: 14px auto 0; max-width: 560px; font-size: 17.5px; color: var(--ink-soft); line-height: 1.55; }
+
+  section.panel { scroll-margin-top: 18px; }
+  .panel h2 { font-size: clamp(28px, 3.6vw, 36px); font-weight: 780; letter-spacing: -0.02em; color: var(--accent); margin-bottom: 26px; }
+  .panel h2 .sep { color: var(--hairline); font-weight: 400; margin: 0 6px; }
+  .panel h3 { font-size: 18px; font-weight: 700; color: var(--accent); margin: 30px 0 8px; }
+  .panel p, .panel li { font-size: 16.5px; line-height: 1.7; color: #2c2c30; }
+  .panel p + p { margin-top: 18px; }
+  .panel h3 + p { margin-top: 0; }
+  .panel strong { color: var(--ink); font-weight: 680; }
+  .panel .lead { color: var(--accent); }
+  .sources { padding: 28px 32px 30px; }
+  .sources p { font-size: 13px; line-height: 1.6; color: var(--ink-soft); }
+
+  @media (max-width: 820px) {
+    .sidebar { display: none; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline); padding: 10px 16px;
+    }
+    .menu-btn {
+      background: none; border: 1px solid var(--hairline); border-radius: 10px;
+      width: 42px; height: 42px; display: grid; place-items: center; color: var(--accent); cursor: pointer;
+    }
+    .topbar .toc {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--bg); border-bottom: 1px solid var(--hairline);
+      padding: 14px 16px 18px; gap: 8px; max-height: calc(100vh - 64px); overflow-y: auto;
+    }
+    .topbar.open .toc { display: flex; }
+    main { margin-left: 0; padding: 12px 12px 28px; gap: 12px; }
+    .panel { padding: 40px 20px 48px; border-radius: 18px; }
+    .cover { padding: 64px 20px 72px; }
+    .sources { padding: 24px 20px; }
+    section.panel { scroll-margin-top: 76px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- The mark, once; both logo spots <use> it. Same geometry as orbit-mark.png:
+     an O (ellipse) with the dot at its upper right and a gap cut around the dot. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <mask id="gap" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="400">
+      <rect width="400" height="400" fill="#fff"/>
+      <circle class="gap-start" cx="280" cy="113" r="38" fill="#000"/>
+      <circle class="gap-dot" cx="280" cy="113" r="38" fill="#000"/>
+    </mask>
+  </defs>
+</svg>
+
+<aside class="sidebar">
+  <a class="mark" href="./" aria-label="Orbit">
+    <svg class="mark-svg" width="72" height="72" viewBox="40 40 320 330" aria-hidden="true">
+      <path class="trail" mask="url(#gap)" d="M280 113 A113 130 0 1 1 120 297 A113 130 0 1 1 280 113"/>
+      <circle class="dot" cx="280" cy="113" r="23"/>
+    </svg>
+  </a>
+  <ol class="toc" data-toc></ol>
+  <a class="back" href="./">&larr; Get Orbit</a>
+</aside>
+
+<div class="topbar">
+  <a href="./" aria-label="Orbit">
+    <svg class="mark-svg" width="42" height="42" viewBox="40 40 320 330" aria-hidden="true">
+      <path class="trail" mask="url(#gap)" d="M280 113 A113 130 0 1 1 120 297 A113 130 0 1 1 280 113"/>
+      <circle class="dot" cx="280" cy="113" r="23"/>
+    </svg>
+  </a>
+  <button class="menu-btn" type="button" aria-label="Sections" aria-expanded="false">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <ol class="toc" data-toc></ol>
+</div>
+
+<main>
+  <header class="panel cover">
+    <!-- Orbit's take on a patterned cover: faint concentric orbits with a few bodies on them. -->
+    <svg class="rings" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g fill="none" stroke="var(--ring)" stroke-width="1.5">
+        <ellipse cx="500" cy="210" rx="170" ry="70"/>
+        <ellipse cx="500" cy="210" rx="290" ry="122"/>
+        <ellipse cx="500" cy="210" rx="420" ry="178"/>
+        <ellipse cx="500" cy="210" rx="560" ry="238"/>
+      </g>
+      <g fill="var(--accent)" opacity="0.28">
+        <circle cx="330" cy="210" r="6"/>
+        <circle cx="742" cy="143" r="7"/>
+        <circle cx="187" cy="300" r="5"/>
+        <circle cx="905" cy="320" r="6"/>
+      </g>
+    </svg>
+    <div class="inner">
+      <div class="eyebrow">Whitepaper</div>
+      <h1>Orbit</h1>
+      <div class="tagline">Spend more of your life with the people already in it.</div>
+      <p class="lede">Across a lifetime you meet thousands of people. Orbit keeps all of them within reach, so the ones worth seeing again become hours you actually spend together.</p>
+    </div>
+  </header>
+
+  <!-- Each <section> becomes a numbered card in the sidebar; its data-label is the card's name. -->
+  <section class="panel" id="problem" data-label="The problem">
+    <div class="inner">
+      <h2>01<span class="sep">|</span>The problem</h2>
+      <p>Gen Z reports the highest loneliness of any generation surveyed, and it is also the most connected generation in human history. You can reach almost anyone on earth in a few seconds. Something is still missing.</p>
+      <p>The numbers are not subtle. In Cigna’s 2025 Loneliness in America report, 67 percent of Gen Z were classified as lonely, against 44 percent of baby boomers. A 2025 Hopelab and Data for Progress survey found that 61 percent of young people say loneliness takes a toll on them, and 35 percent say it disrupts their daily life. Over the past twenty years, Americans between 15 and 24 have gone from about an hour a day spent socializing to roughly 35 minutes, the steepest decline of any age group.</p>
+      <p>Social media promised to shrink the world, and in a sense it did. What it never did was put anyone back in a room together. It gave us a constant view of other people’s lives and called that connection.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="why-it-happens" data-label="Why it keeps happening">
+    <div class="inner">
+      <h2>02<span class="sep">|</span>Why it keeps happening</h2>
+      <h3>You know more people than you can hold in your head.</h3>
+      <p>Research on social groups puts the number of relationships a person can actively maintain at roughly 150. Across a life of schools, jobs, cities, and trips, you meet many times that. The rest do not disappear. They fall out of reach, and no tool has ever been built to keep them within it.</p>
+      <h3>Busy is the default.</h3>
+      <p>People do not set relationships aside because they stopped caring. They set them aside because the week fills up and reaching out takes a deliberate act that nothing prompts. Friendship loses to friction every time. It does not have to.</p>
+      <h3>Nobody wants to go alone.</h3>
+      <p>Bumble reports that 47 percent of young adults want more friends to do activities with. Think about the trips, the projects, and the nights out you skipped because there was no obvious person to ask. The person was probably out there. You just could not think of them in the moment.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="not-a-network" data-label="Not another network">
+    <div class="inner">
+      <h2>03<span class="sep">|</span>Not another network</h2>
+      <p>Orbit is closer to cognitive storage than to social media. It holds what you know about the people you have met, keeps it current, and hands it back at the moment it is useful. There is no feed, no follower count, and nothing to perform. The product only works if you end up somewhere with an actual person.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="circles" data-label="Overlapping circles">
+    <div class="inner">
+      <h2>04<span class="sep">|</span>Overlapping circles</h2>
+      <p>Nobody lives in one circle. The friend you ski with also runs a warehouse. The person you worked alongside two summers ago now lives in the city you are about to visit. Orbit does not sort your life into a professional column and a social one, because life is not sorted that way.</p>
+      <h3>Travel</h3>
+      <p>You are going somewhere for a weekend. Somebody you know is there right now, or grew up there, or spent three years there. Standing at the gate you would never recall it, and the alternative is posting “anyone in Lisbon?” to your story, which nobody actually wants to do. Plenty of people you would never add on Find My are still people you would want to place on a map. Orbit tells you, and a trip you were going to spend alone becomes one you spend with someone.</p>
+      <h3>A Friday night</h3>
+      <p>You get a finite number of Friday and Saturday nights, and spending one of them scrolling is a poor trade. Orbit surfaces who is in your town and who in your wider network is into the same things you are, so the night has somewhere to go.</p>
+      <h3>Something you have wanted to try</h3>
+      <p>The hobby you never started, the skill you assumed took an expert. Somebody a step or two out in your network has done it already and would be glad to be asked.</p>
+      <h3>Work</h3>
+      <p>Very few good ventures start alone. When people build something, they build it with someone they already trust, and ordinary business runs the same way. Someone you know can help with a piece of a deal, a supplier, a hire, or an introduction. Most people have no way to see that, so they never ask.</p>
+      <h3>The moments that count</h3>
+      <p>Weddings, milestones, and the harder occasions concentrate the mind on who was actually there for you. Orbit helps with the practical side, from guest lists to who sits at which table, and with the part that matters more, which is not leaving somebody out because they slipped your mind.</p>
+      <p>What you learn about a person today is there the next time you need it. Orbit takes in new detail as you go, so the picture stays current instead of aging into a stale contact list.</p>
+      <p>There is a second-order effect worth naming. People who can reliably put the right two people in touch, or say who has done a thing before, become the ones everybody calls. That reputation has always rested on remembering, which is exactly the part Orbit handles for you.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="market" data-label="Market snapshot">
+    <div class="inner">
+      <h2>05<span class="sep">|</span>Market snapshot</h2>
+      <p>The market has answered loneliness with strangers. Bumble BFF, Timeleft, 222, Clyx, Les Amis, and Clockout together drew more than four million downloads in a single recent year, which tells you the demand is real. The model is largely shared across them: you are matched with someone you have never met, on the strength of a short quiz or a photo, and from there it is on the two of you.</p>
+      <p>Mostly it does not turn into anything. The consistent criticism of the category, including of its largest player, is that conversations fade before anyone meets in person. The introduction was never the hard part. Trust is, and no app can manufacture it between two people with no shared history.</p>
+      <p>Meanwhile the platforms that already hold your relationships are not trying to solve this. Instagram is built to keep you scrolling, not to get you into a room with someone, and those two goals do not point the same direction. Nobody is working with the network you already have, which is the most valuable one in your life and the one you have lost track of.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="your-data" data-label="Your data">
+    <div class="inner">
+      <h2>06<span class="sep">|</span>Democratizing your data</h2>
+      <p>For two decades, social platforms have run on your data. They mapped your relationships and used what they learned to hold your attention, while telling you little about what was collected or how it worked. The value was real. It simply went to them. Orbit inverts that. The record of who you know and how you know them belongs to you, lives on your own devices under keys only you hold, and works for you.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="why-orbit" data-label="Why Orbit">
+    <div class="inner">
+      <h2>07<span class="sep">|</span>Why Orbit needs to exist</h2>
+      <p>Orbit exists to do what modern life keeps failing at: connecting with the people we care about and doing what we love with the limited time we have. Not another feed, not an introduction to strangers, and not one more business built on selling your relationships to somebody else.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="security" data-label="Security">
+    <div class="inner">
+      <h2>08<span class="sep">|</span>Security and your data</h2>
+      <p>Orbit is built so that your relationship data stays yours. Three commitments hold that up.</p>
+      <h3>We run no servers of our own.</h3>
+      <p>Your information syncs between your own devices through your personal iCloud account, encrypted end to end. The keys live only on your devices, which means neither Apple nor Orbit can read what is stored.</p>
+      <h3>We do not share your data with third parties.</h3>
+      <p>Orbit does not sell, rent, or trade your information, and we do not build an advertising product on top of it.</p>
+      <h3>Plain-language questions are processed by an AI provider.</h3>
+      <p>When you ask Orbit something in your own words, that request travels over an encrypted connection to our AI provider, Anthropic, which interprets it and hands back an answer. We send only what is needed to answer the question.</p>
+      <p>Losing a device does not mean losing your keys or your data, and removing a device from your account cuts off its access from that point forward.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="faq" data-label="FAQ">
+    <div class="inner">
+      <h2>09<span class="sep">|</span>Frequently asked questions</h2>
+      <h3>Is my data protected?</h3>
+      <p>Yes. It is encrypted end to end and synced through your own iCloud account rather than through Orbit. We hold no copy and no keys.</p>
+      <h3>Does Orbit sell my data?</h3>
+      <p>No. We do not sell or share it with third parties, and we have no advertising business that would give us a reason to.</p>
+      <h3>Can the Orbit team read my contacts?</h3>
+      <p>No. The data is encrypted with keys that stay on your devices, so there is nothing readable on our end to look at.</p>
+      <h3>What can Orbit actually help me do?</h3>
+      <p>Remember who you know and the details that matter about them, see who is nearby when you travel or move, surface people you have lost touch with, and make it easy to reach out before the moment passes.</p>
+      <h3>Is this for work or for friends?</h3>
+      <p>Both, and that is deliberate. The same network carries your closest friends and the person who can help with a supplier. Orbit does not ask you to separate them.</p>
+      <h3>Does Orbit use AI?</h3>
+      <p>Yes. You can ask questions in plain language rather than searching or scrolling. Those questions are processed by Anthropic, our AI provider, over an encrypted connection.</p>
+      <h3>What happens to my data if I stop using Orbit?</h3>
+      <p>It stays in your iCloud account, under your control, and you can delete it at any time. There is no copy on our side to request the deletion of.</p>
+    </div>
+  </section>
+
+  <div class="panel sources">
+    <div class="inner">
+      <p><strong>Sources:</strong> The Cigna Group, Loneliness in America 2025 (Evernorth Research Institute / Morning Consult, fielded 2024). Hopelab and Data for Progress youth mental health survey, 2025. U.S. Bureau of Labor Statistics, American Time Use Survey. Bumble, 2025.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Build the numbered section cards from the sections, and light up the one being read.
+  const sections = [...document.querySelectorAll("main section[id]")];
+  document.querySelectorAll("[data-toc]").forEach(list => {
+    sections.forEach((s, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="#${s.id}"><span class="num">${String(i + 1).padStart(2, "0")}</span><span class="label">${s.dataset.label}</span></a>`;
+      list.appendChild(li);
+    });
+  });
+  const topbar = document.querySelector(".topbar"), menuBtn = document.querySelector(".menu-btn");
+  const topToc = topbar.querySelector(".toc");
+  const back = document.createElement("li");
+  back.innerHTML = '<a href="./"><span class="label">&larr; Get Orbit</span></a>';
+  topToc.appendChild(back);
+  menuBtn.addEventListener("click", () => {
+    const open = topbar.classList.toggle("open");
+    menuBtn.setAttribute("aria-expanded", open);
+  });
+  topToc.addEventListener("click", e => {
+    if (e.target.closest("a")) { topbar.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); }
+  });
+
+  // The mark: at the top only the dot shows; scrolling carries it clockwise around the O,
+  // drawing the ring behind it; at the bottom it's back where it started and the O is whole.
+  const trails = [...document.querySelectorAll(".mark-svg .trail")];
+  const dots = [...document.querySelectorAll(".mark-svg .dot")];
+  const gapDot = document.querySelector("#gap .gap-dot");
+  const total = trails[0].getTotalLength();
+  trails.forEach(t => { t.style.strokeDasharray = `0 ${total * 2}`; });
+
+  const setActive = id => document.querySelectorAll(".toc a[href^='#']").forEach(a =>
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id));
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 1;
+    const len = p * total;
+    const pt = trails[0].getPointAtLength(p >= 1 ? 0 : len);
+    trails.forEach(t => { t.style.strokeDasharray = `${len} ${total * 2}`; });
+    dots.forEach(d => { d.setAttribute("cx", pt.x); d.setAttribute("cy", pt.y); });
+    gapDot.setAttribute("cx", pt.x); gapDot.setAttribute("cy", pt.y);
+
+    const line = innerHeight * 0.35;
+    let current = null;
+    for (const s of sections) if (s.getBoundingClientRect().top <= line) current = s.id;
+    if (p >= 0.999) current = sections.at(-1).id;
+    setActive(current);
+  };
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener("resize", update);
+  update();
+</script>
+</body>
+</html>
