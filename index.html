@@ -3,161 +3,74 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Orbit — Get Orbit</title>
+<title>Orbit</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="description" content="Orbit remembers everyone you know — secure, private, on your devices.">
 <style>
-  :root {
-    --ink: #1b1b1d;
-    --ink-soft: #55555c;
-    --accent: #17a34a;
-    --accent-ink: #ffffff;
-    --card: #f0f6f1;
-    --bg: #ffffff;
-    --hairline: #e7e7ea;
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    background: var(--bg); color: var(--ink);
-    -webkit-font-smoothing: antialiased;
+    background: #ffffff; color: #1b1b1d; -webkit-font-smoothing: antialiased;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
   }
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    max-width: 1060px; margin: 0 auto; padding: 16px 24px;
+  .gate { text-align: center; padding: 24px; width: 100%; max-width: 360px; }
+  .gate img { width: 64px; height: 64px; margin-bottom: 22px; }
+  .gate h1 { font-size: 24px; font-weight: 750; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .gate p { color: #55555c; font-size: 15px; margin-bottom: 26px; }
+  .gate input {
+    width: 100%; font-size: 17px; padding: 13px 16px; border: 1.5px solid #e0e0e4;
+    border-radius: 12px; outline: none; text-align: center; background: #fafafa;
   }
-  .wordmark { display: flex; align-items: center; gap: 16px; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
-  .wordmark svg { display: block; }
-  .paper-btn {
-    display: inline-flex; align-items: center; gap: 28px;
-    background: var(--accent); color: var(--accent-ink); text-decoration: none;
-    font-size: 14px; font-weight: 600;
-    letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
-    padding: 13px 20px 13px 22px; border-radius: 4px;
-    box-shadow: 0 0 22px rgba(23, 163, 74, 0.35);
+  .gate input:focus { border-color: #17a34a; background: #fff; }
+  .gate button {
+    margin-top: 14px; width: 100%; background: #17a34a; color: #fff; border: none;
+    font-size: 17px; font-weight: 600; padding: 13px; border-radius: 999px; cursor: pointer;
   }
-  .paper-btn:hover { filter: brightness(1.08); }
-  .paper-btn svg { flex: none; }
-  @media (max-width: 520px) {
-    header { gap: 12px; padding: 14px 16px; }
-    .wordmark { gap: 10px; font-size: 21px; }
-    .wordmark img { width: 40px; height: 40px; }
-    .paper-btn { gap: 10px; font-size: 11.5px; letter-spacing: 0.05em; padding: 10px 12px; }
-    .paper-btn svg { width: 14px; height: 14px; }
-  }
-  main { max-width: 1060px; margin: 0 auto; padding: 0 24px 80px; }
-  .hero { text-align: center; margin: 0 auto 28px; max-width: 640px; }
-  .hero h1 { font-size: clamp(34px, 5.5vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-  .hero p { margin-top: 12px; font-size: 18px; color: var(--ink-soft); line-height: 1.5; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-  .panel { background: var(--card); border-radius: 22px; padding: 28px 32px 24px; text-align: center; }
-  .panel h2 { font-size: 27px; font-weight: 750; letter-spacing: -0.02em; }
-  .panel .sub { margin: 10px auto 24px; color: var(--ink-soft); font-size: 15.5px; line-height: 1.55; max-width: 340px; }
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
-    background: var(--accent); color: var(--accent-ink);
-    font-size: 17px; font-weight: 600; text-decoration: none;
-    padding: 14px 30px; border-radius: 999px;
-  }
-  .btn:hover { filter: brightness(1.08); }
-  .btn svg { flex: none; }
-  .btn.secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
-  .note { margin-top: 18px; font-size: 13px; color: var(--ink-soft); }
-  .note.released { margin-top: 10px; font-size: 12px; }
-  .note.released + .note { margin-top: 8px; }
-  .principles {
-    margin: 28px auto 0; max-width: 860px; text-align: center;
-    border-top: 1px solid var(--hairline); padding-top: 24px;
-  }
-  .principles h3 { font-size: clamp(24px, 4vw, 32px); font-weight: 780; margin-bottom: 34px; letter-spacing: -0.02em; }
-  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; }
-  @media (max-width: 720px) { .feature-grid { grid-template-columns: 1fr; } }
-  .feature { background: var(--card); border-radius: 18px; padding: 26px 26px 24px; }
-  .feature h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; }
-  .feature p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.6; }
-  .feature p strong { color: var(--ink); font-weight: 640; }
-  .feature sup { font-size: 0.7em; }
-  footer {
-    border-top: 1px solid var(--hairline);
-    padding: 28px 24px 48px; text-align: center;
-    color: var(--ink-soft); font-size: 13px;
-  }
+  .gate .for-pm { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .gate .err { color: #c33; font-size: 13.5px; margin-top: 12px; min-height: 18px; }
 </style>
 </head>
 <body>
-<header>
-  <a class="wordmark" href="/orbit-releases/">
-    <img src="orbit-mark.png" width="52" height="52" alt="">
-    Orbit
-  </a>
-  <a class="paper-btn" href="whitepaper.html">Read the whitepaper<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-</header>
-
-<main>
-  <section class="hero">
-    <h1>Everyone you know,<br>remembered.</h1>
-    <p>Orbit keeps the people in your life — and everything worth remembering about them — organized, searchable, and completely secure and private.</p>
-  </section>
-
-  <section class="grid">
-    <div class="panel">
-      <h2>Orbit for Mac</h2>
-      <p class="sub">Direct download, signed and notarized by&nbsp;Apple. Orbit keeps itself up to date.</p>
-      <a class="btn" id="mac-download" href="https://github.com/zacharyfgordon-sudo/orbit-releases/releases/latest"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v9"/><path d="m8 10 4 4 4-4"/><path d="M4.5 16.5v2.2a1.8 1.8 0 0 0 1.8 1.8h11.4a1.8 1.8 0 0 0 1.8-1.8v-2.2"/></svg>Download for Mac</a>
-      <p class="note released" id="released">&nbsp;</p>
-      <p class="note">Requires macOS 14 or later.</p>
-    </div>
-    <div class="panel">
-      <h2>Orbit for iPhone</h2>
-      <p class="sub">The beta ships through Apple&nbsp;TestFlight. Updates arrive automatically.</p>
-      <a class="btn" href="mailto:socialconnectorss@gmail.com?subject=Orbit%20iOS%20beta"><img src="appstore-icon.png" width="22" height="22" alt="" style="display:block">Request a TestFlight invite</a>
-      <p class="note">Have an invite? Open TestFlight on your iPhone.</p>
-    </div>
-  </section>
-
-  <section class="principles" id="security">
-    <h3>Security ahead of the curve</h3>
-    <div class="feature-grid">
-      <div class="feature">
-        <h4>Post-quantum encryption</h4>
-        <p>Every sync between your devices is sealed with a hybrid of <strong>ML-KEM-768</strong> — the NIST post-quantum standard — and Curve25519. Even a future quantum computer can't read what your devices say to each other.</p>
-      </div>
-      <div class="feature">
-        <h4>10<sup>50</sup> years to crack</h4>
-        <p>Brute-forcing one of Orbit's 256-bit keys would take today's fastest supercomputer on the order of 10<sup>50</sup> years. Every computer on Earth working together: still about 10<sup>48</sup> years. A future full-scale quantum computer: around 10<sup>25</sup> years &mdash; and the key exchange itself is post-quantum, so there's no shortcut. The universe is 1.4&times;10<sup>10</sup> years old.</p>
-      </div>
-      <div class="feature">
-        <h4>Choose your level</h4>
-        <p>Four security levels — <strong>Sealed, Guarded, Lockdown, and Blackout</strong> — let you decide exactly how strict Orbit runs, from everyday ease to nothing-in, nothing-out.</p>
-      </div>
-      <div class="feature">
-        <h4>No servers, ever</h4>
-        <p>Your people, notes, and history live on your devices. Orbit runs no cloud that could see them, and your devices talk directly — keys never leave your hands.</p>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  Orbit · Made independently
-</footer>
+<form class="gate" id="gate" method="post" action="#">
+  <img src="orbit-mark.png" alt="">
+  <h1>Orbit</h1>
+  <p>This page is private. Enter the passphrase.</p>
+  <!-- A username for the browser's password manager to file the passphrase under, so it can offer it back with Touch ID / Face ID. -->
+  <input class="for-pm" type="text" name="username" autocomplete="username" value="Orbit" readonly tabindex="-1" aria-hidden="true">
+  <input type="password" id="pw" name="password" autocomplete="current-password" autofocus>
+  <button type="submit">Enter</button>
+  <div class="err" id="err"></div>
+</form>
 <script>
-  // Mac button: point straight at the newest release's zip so one click downloads it, and show
-  // "Released on" in the visitor's own time zone. If GitHub doesn't answer, the button keeps
-  // linking to the releases page.
-  fetch("https://api.github.com/repos/zacharyfgordon-sudo/orbit-releases/releases/latest")
-    .then(r => r.ok ? r.json() : Promise.reject(r.status))
-    .then(rel => {
-      const zip = rel.assets.find(a => a.name.endsWith(".zip"));
-      if (zip) document.getElementById("mac-download").href = zip.browser_download_url;
-      const when = new Date(rel.published_at).toLocaleString("en-US", {
-        month: "long", day: "numeric", year: "numeric",
-        hour: "numeric", minute: "2-digit", timeZoneName: "short"
-      });
-      document.getElementById("released").textContent = "Released on: " + when;
-    })
-    .catch(() => {});
+const SALT = "ZAGeFoj0NgYj72m/I0C/mg==", DATA = "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";
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function unlock(pw) {
+  const km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: b64(SALT), iterations: 210000, hash: "SHA-256" },
+    km, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const raw = b64(DATA);
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: raw.slice(0, 12) }, key, raw.slice(12));
+  return new TextDecoder().decode(plain);
+}
+async function attempt(pw, silent) {
+  try {
+    const html = await unlock(pw);
+    sessionStorage.setItem("orbit-gate", pw);
+    // Right passphrase: tell the browser the sign-in worked so it offers to save it (Chrome; Safari saves from the form).
+    if (!silent && window.PasswordCredential) {
+      try { await navigator.credentials.store(new PasswordCredential({ id: "Orbit", password: pw, name: "Orbit" })); } catch (e) {}
+    }
+    document.open(); document.write(html); document.close();
+  } catch (e) {
+    if (!silent) document.getElementById("err").textContent = "That passphrase isn\u2019t right.";
+  }
+}
+document.getElementById("gate").addEventListener("submit", ev => {
+  ev.preventDefault();
+  attempt(document.getElementById("pw").value.trim(), false);
+});
+const saved = sessionStorage.getItem("orbit-gate");
+if (saved) attempt(saved, true);
 </script>
 </body>
 </html>
