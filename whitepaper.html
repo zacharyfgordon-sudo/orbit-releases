@@ -27,11 +27,11 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ---- The Orbit mark: draws itself on load (thin contour, then the solid mark fades in),
-          then scrolling down undraws the orbit back to just the dot ---- */
+  /* ---- The Orbit mark: draws itself on load (its outer and inner edges trace together, then the
+          solid mark fades in), then scrolling down undraws the orbit back to just the dot ---- */
   .mark-svg { display: block; overflow: visible; }
-  .mark-svg .trail { fill: none; stroke: var(--ink); stroke-width: 31.3; opacity: 0; }
-  .mark-svg .contour { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; }
+  .mark-svg .trail, .mark-svg .contour { fill: none; stroke: var(--ink); stroke-width: 31.3; }
+  .mark-svg .trail { opacity: 0; }
   .mark-svg .dot { fill: var(--ink); opacity: 0; }
 
   /* ---- Sidebar: logo, numbered section cards, way back ---- */
@@ -274,24 +274,40 @@
     if (e.target.closest("a")) { topbar.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); }
   });
 
-  // The mark. On load it draws itself: a thin contour traces the orbit, then the solid mark
-  // fades in over it. After that, scrolling down undraws the orbit — whole at the top, and the
-  // dot retreats around it until only the dot is left at the bottom. Scrolling up redraws it.
+  // The mark. On load it draws itself: two thin lines, its outer and inner edges, trace the orbit
+  // together, then the solid mark fades in over them. After that, scrolling down undraws the
+  // orbit — whole at the top, and the dot retreats around it until only the dot is left at the
+  // bottom. Scrolling up redraws it.
   const marks = [...document.querySelectorAll(".mark-svg")];
   const trails = marks.map(m => m.querySelector(".trail"));
   const dots = marks.map(m => m.querySelector(".dot"));
+  const total = trails[0].getTotalLength();
+
+  // The edges are the full-weight orbit stroke with its middle masked away: #rim is the dot-gap
+  // mask plus the orbit stroked narrower in black, which leaves one EDGE-wide line along each side.
+  const EDGE = 6;
+  const gap = document.getElementById("gap");
+  const rim = gap.cloneNode(true);
+  rim.id = "rim";
+  const middle = trails[0].cloneNode(false);
+  middle.removeAttribute("class"); middle.removeAttribute("mask");
+  middle.setAttribute("fill", "none"); middle.setAttribute("stroke", "#000");
+  middle.setAttribute("stroke-width", parseFloat(getComputedStyle(trails[0]).strokeWidth) - 2 * EDGE);
+  rim.append(middle);
+  gap.after(rim);
+  const gapDots = [...document.querySelectorAll("mask .gap-dot")];
+
   const contours = trails.map(t => {
-    const c = t.cloneNode(false);          // same orbit geometry and dot gap, thin stroke
+    const c = t.cloneNode(false);          // same orbit geometry, masked down to its two edges
     c.setAttribute("class", "contour");
+    c.setAttribute("mask", "url(#rim)");
     t.before(c);                           // behind the solid mark
     return c;
   });
-  const gapDot = document.querySelector("#gap .gap-dot");
-  const total = trails[0].getTotalLength();
   contours.forEach(c => { c.style.strokeDasharray = `${total} ${total}`; c.style.strokeDashoffset = total; });
 
-  const CONTOUR_MS = 520, FILL_DELAY = 380, FILL_MS = 420, INTRO_MS = FILL_DELAY + FILL_MS;
-  const easeOut = x => 1 - Math.pow(1 - x, 3);
+  const CONTOUR_MS = 900, FILL_DELAY = 780, FILL_MS = 520, INTRO_MS = FILL_DELAY + FILL_MS;
+  const easeOut = x => Math.sin(x * Math.PI / 2);
   const easeInOut = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
 
   // ring = how much of the orbit shows (1 whole, 0 none); fill = solid mark + dot opacity;
@@ -302,7 +318,7 @@
     contours.forEach(c => { c.style.strokeDashoffset = total * (1 - drawn); c.style.opacity = ghost; });
     const pt = trails[0].getPointAtLength(ring >= 1 ? total : len);
     dots.forEach(d => { d.setAttribute("cx", pt.x); d.setAttribute("cy", pt.y); d.style.opacity = fill; });
-    gapDot.setAttribute("cx", pt.x); gapDot.setAttribute("cy", pt.y);
+    gapDots.forEach(g => { g.setAttribute("cx", pt.x); g.setAttribute("cy", pt.y); });
   };
 
   const setActive = id => document.querySelectorAll(".toc a[href^='#']").forEach(a =>
