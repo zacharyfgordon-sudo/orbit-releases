@@ -27,10 +27,12 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ---- The Orbit mark, drawn by scrolling: the dot circles the O ---- */
+  /* ---- The Orbit mark: draws itself on load (thin contour, then the solid mark fades in),
+          then scrolling down undraws the orbit back to just the dot ---- */
   .mark-svg { display: block; overflow: visible; }
-  .mark-svg .trail { fill: none; stroke: var(--ink); stroke-width: 31.3; }
-  .mark-svg .dot { fill: var(--ink); }
+  .mark-svg .trail { fill: none; stroke: var(--ink); stroke-width: 31.3; opacity: 0; }
+  .mark-svg .contour { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; }
+  .mark-svg .dot { fill: var(--ink); opacity: 0; }
 
   /* ---- Sidebar: logo, numbered section cards, way back ---- */
   .sidebar {
@@ -272,36 +274,71 @@
     if (e.target.closest("a")) { topbar.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); }
   });
 
-  // The mark: at the top only the dot shows; scrolling carries it counterclockwise around the O,
-  // drawing the ring behind it; at the bottom it's back where it started and the O is whole.
-  const trails = [...document.querySelectorAll(".mark-svg .trail")];
-  const dots = [...document.querySelectorAll(".mark-svg .dot")];
+  // The mark. On load it draws itself: a thin contour traces the orbit, then the solid mark
+  // fades in over it. After that, scrolling down undraws the orbit — whole at the top, and the
+  // dot retreats around it until only the dot is left at the bottom. Scrolling up redraws it.
+  const marks = [...document.querySelectorAll(".mark-svg")];
+  const trails = marks.map(m => m.querySelector(".trail"));
+  const dots = marks.map(m => m.querySelector(".dot"));
+  const contours = trails.map(t => {
+    const c = t.cloneNode(false);          // same orbit geometry and dot gap, thin stroke
+    c.setAttribute("class", "contour");
+    t.before(c);                           // behind the solid mark
+    return c;
+  });
   const gapDot = document.querySelector("#gap .gap-dot");
   const total = trails[0].getTotalLength();
-  trails.forEach(t => { t.style.strokeDasharray = `0 ${total * 2}`; });
+  contours.forEach(c => { c.style.strokeDasharray = `${total} ${total}`; c.style.strokeDashoffset = total; });
+
+  const CONTOUR_MS = 520, FILL_DELAY = 380, FILL_MS = 420, INTRO_MS = FILL_DELAY + FILL_MS;
+  const easeOut = x => 1 - Math.pow(1 - x, 3);
+  const easeInOut = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+
+  // ring = how much of the orbit shows (1 whole, 0 none); fill = solid mark + dot opacity;
+  // drawn = how much of the contour has traced (1 whole); ghost = contour opacity.
+  const paint = (ring, fill, drawn, ghost) => {
+    const len = ring * total;
+    trails.forEach(t => { t.style.strokeDasharray = `${len} ${total * 2}`; t.style.opacity = fill; });
+    contours.forEach(c => { c.style.strokeDashoffset = total * (1 - drawn); c.style.opacity = ghost; });
+    const pt = trails[0].getPointAtLength(ring >= 1 ? total : len);
+    dots.forEach(d => { d.setAttribute("cx", pt.x); d.setAttribute("cy", pt.y); d.style.opacity = fill; });
+    gapDot.setAttribute("cx", pt.x); gapDot.setAttribute("cy", pt.y);
+  };
 
   const setActive = id => document.querySelectorAll(".toc a[href^='#']").forEach(a =>
     a.classList.toggle("active", a.getAttribute("href") === "#" + id));
-  let ticking = false;
-  const update = () => {
-    ticking = false;
+  const progress = () => {
     const max = document.documentElement.scrollHeight - innerHeight;
-    const p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 1;
-    const len = p * total;
-    const pt = trails[0].getPointAtLength(p >= 1 ? 0 : len);
-    trails.forEach(t => { t.style.strokeDasharray = `${len} ${total * 2}`; });
-    dots.forEach(d => { d.setAttribute("cx", pt.x); d.setAttribute("cy", pt.y); });
-    gapDot.setAttribute("cx", pt.x); gapDot.setAttribute("cy", pt.y);
-
+    return max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+  };
+  const spotlight = p => {
     const line = innerHeight * 0.35;
     let current = null;
     for (const s of sections) if (s.getBoundingClientRect().top <= line) current = s.id;
     if (p >= 0.999) current = sections.at(-1).id;
     setActive(current);
   };
-  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-  addEventListener("resize", update);
-  update();
+
+  let introDone = false, ticking = false;
+  const update = () => {
+    ticking = false;
+    const p = progress();
+    paint(1 - p, 1, 1, 0);
+    spotlight(p);
+  };
+  const start = performance.now();
+  const intro = now => {
+    const t = now - start;
+    const drawn = easeOut(Math.min(1, t / CONTOUR_MS));
+    const fill = easeInOut(Math.min(1, Math.max(0, (t - FILL_DELAY) / FILL_MS)));
+    paint(1, fill, drawn, 1 - fill);
+    spotlight(progress());
+    if (t < INTRO_MS) requestAnimationFrame(intro);
+    else { introDone = true; update(); }
+  };
+  addEventListener("scroll", () => { if (introDone && !ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener("resize", () => { if (introDone) update(); });
+  requestAnimationFrame(intro);
 </script>
 </body>
 </html>
