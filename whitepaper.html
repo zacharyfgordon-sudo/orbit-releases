@@ -8,22 +8,23 @@
 <link rel="icon" href="favicon.png">
 <style>
   :root {
-    --ink: #1b1b1d;
-    --ink-soft: #55555c;
-    --accent: #17a34a;
+    --ink: #1d1d1f;
+    --ink-soft: #6e6e73;
+    --accent: #0b5c3e;
     --accent-ink: #ffffff;
-    --card: #f0f6f1;
+    --card: #f5f5f7;
     --bg: #ffffff;
-    --page: #f6f8f6;
-    --hairline: #e3e7e4;
-    --ring: rgba(23, 163, 74, 0.14);
+    --page: #f5f5f7;
+    --hairline: #d2d2d7;
+    --ring: rgba(11, 92, 62, 0.12);
+    --shadow: 2px 4px 12px rgba(0, 0, 0, 0.08);
     --sidebar: 232px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    background: var(--page); color: var(--ink);
+    background: var(--page); color: var(--ink); letter-spacing: -0.022em;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -50,30 +51,30 @@
     transition: background .15s, border-color .15s;
   }
   .toc a:hover, .toc a:focus-visible { border-color: var(--accent); outline: none; }
-  .toc .num { display: block; color: var(--accent); font-weight: 700; font-size: 13px; margin-bottom: 3px; }
-  .toc .label { display: block; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
-  .toc a.active { background: #e2f2e7; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .toc .num { display: block; color: var(--accent); font-weight: 600; font-size: 13px; margin-bottom: 3px; font-variant-numeric: tabular-nums; }
+  .toc .label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+  .toc a.active { background: var(--page); border-color: var(--accent); }
   .toc a.active .label { color: var(--ink); }
 
   /* ---- Phone top bar (replaces the sidebar under 820px) ---- */
   .topbar { display: none; }
 
   /* ---- Content panels ---- */
-  main { margin-left: var(--sidebar); padding: 18px 18px 40px; display: flex; flex-direction: column; gap: 18px; }
+  main { margin-left: var(--sidebar); padding: 24px 24px 48px; display: flex; flex-direction: column; gap: 24px; }
   .panel {
-    background: var(--bg); border: 1px solid var(--hairline); border-radius: 22px;
+    background: var(--bg); border: none; border-radius: 18px; box-shadow: var(--shadow);
     padding: 64px 32px 72px;
   }
   .panel > .inner { max-width: 680px; margin: 0 auto; }
 
   section.panel { scroll-margin-top: 18px; }
-  .panel h2 { font-size: clamp(28px, 3.6vw, 36px); font-weight: 780; letter-spacing: -0.02em; color: var(--accent); margin-bottom: 26px; }
-  .panel h2 .sep { color: var(--hairline); font-weight: 400; margin: 0 6px; }
-  .panel h3 { font-size: 18px; font-weight: 700; color: var(--accent); margin: 30px 0 8px; }
-  .panel p, .panel li { font-size: 16.5px; line-height: 1.7; color: #2c2c30; }
+  .panel h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 600; line-height: 1.1; letter-spacing: -0.015em; color: var(--accent); margin-bottom: 26px; }
+  .panel h2 .sep { color: var(--hairline); font-weight: 300; margin: 0 6px; }
+  .panel h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.015em; color: var(--accent); margin: 30px 0 8px; }
+  .panel p, .panel li { font-size: 17px; line-height: 1.65; color: #333336; }
   .panel p + p { margin-top: 18px; }
   .panel h3 + p { margin-top: 0; }
-  .panel strong { color: var(--ink); font-weight: 680; }
+  .panel strong { color: var(--ink); font-weight: 600; }
   .panel .lead { color: var(--accent); }
   .sources { background: transparent; border: none; border-radius: 0; padding: 8px 32px 10px; }
   .sources p { font-size: 13px; line-height: 1.6; color: var(--ink-soft); }
@@ -283,6 +284,22 @@
   const dots = marks.map(m => m.querySelector(".dot"));
   const total = trails[0].getTotalLength();
 
+  // Safari mis-draws stroke dashes on this many-point path, so partial strokes aren't dashed: each is
+  // the same path cut off after `len` units, its last point placed on the original line between two points.
+  const fullD = trails[0].getAttribute("d");
+  const pts = fullD.match(/-?\d*\.?\d+/g).map(Number).reduce((a, v, i) => (i % 2 ? a[a.length - 1].push(v) : a.push([v]), a), []);
+  pts.push(pts[0]);                                // the closing Z
+  const upTo = len => {
+    if (len >= total) return fullD;
+    let d = `M${pts[0][0]} ${pts[0][1]}`, run = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], seg = Math.hypot(x1 - x0, y1 - y0);
+      if (run + seg >= len) { const f = (len - run) / seg; return `${d} L${x0 + f * (x1 - x0)} ${y0 + f * (y1 - y0)}`; }
+      d += ` L${x1} ${y1}`; run += seg;
+    }
+    return fullD;
+  };
+
   // The edges are the full-weight orbit stroke with its middle masked away: #rim is the dot-gap
   // mask plus the orbit stroked narrower in black, which leaves one EDGE-wide line along each side.
   const EDGE = 6;
@@ -304,7 +321,7 @@
     t.before(c);                           // behind the solid mark
     return c;
   });
-  contours.forEach(c => { c.style.strokeDasharray = `${total} ${total}`; c.style.strokeDashoffset = total; });
+  contours.forEach(c => c.setAttribute("d", upTo(0)));
 
   const CONTOUR_MS = 900, FILL_DELAY = 780, FILL_MS = 520, INTRO_MS = FILL_DELAY + FILL_MS;
   const easeOut = x => Math.sin(x * Math.PI / 2);
@@ -314,9 +331,9 @@
   // drawn = how much of the contour has traced (1 whole); ghost = contour opacity.
   const paint = (ring, fill, drawn, ghost) => {
     const len = ring * total;
-    trails.forEach(t => { t.style.strokeDasharray = `${len} ${total * 2}`; t.style.opacity = fill; });
-    contours.forEach(c => { c.style.strokeDashoffset = total * (1 - drawn); c.style.opacity = ghost; });
-    const pt = trails[0].getPointAtLength(ring >= 1 ? total : len);
+    trails.forEach(t => { t.setAttribute("d", upTo(len)); t.style.opacity = fill; });
+    contours.forEach(c => { c.setAttribute("d", upTo(total * drawn)); c.style.opacity = ghost; });
+    const pt = middle.getPointAtLength(ring >= 1 ? total : len);   // middle keeps the whole path
     dots.forEach(d => { d.setAttribute("cx", pt.x); d.setAttribute("cy", pt.y); d.style.opacity = fill; });
     gapDots.forEach(g => { g.setAttribute("cx", pt.x); g.setAttribute("cy", pt.y); });
   };
