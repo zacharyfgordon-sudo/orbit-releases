@@ -6,6 +6,14 @@
     <language>en</language>
     <item>
       <title>Orbit 1.0</title>
+      <pubDate>Sun, 08 Nov 2026 00:46:49 +0000</pubDate>
+      <sparkle:version>2611071846</sparkle:version>
+      <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure url="https://github.com/zacharyfgordon-sudo/orbit-releases/releases/download/v1.0-2611071846/Orbit-1.0-2611071846.zip" sparkle:edSignature="1DlProNUiz7R3XGWw+Sd59ey6JoP9b+cHTh+XJzAOrvXs/Qnr6He23HEXj/yA1kgyWuIUzRNULea/h/x2cq1Bw==" length="276625024" type="application/octet-stream"/>
+    </item>
+    <item>
+      <title>Orbit 1.0</title>
       <pubDate>Sun, 08 Nov 2026 00:26:59 +0000</pubDate>
       <sparkle:version>2611071826</sparkle:version>
       <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
